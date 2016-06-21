@@ -1,0 +1,42 @@
+ XXX  scan the heap by starting looking at all registered AllocatedChunks
+ XXX  create "routine identifier" type
+ XXX  retrieve all grammartypes with the same parent_type
+ XXX  create a "data structure" type (CompositeType hashmap)
+
+CRITICAL
+
+ o  Use GrammarType to scan for data structures
+ o  add the "label" command that enables us to rename RWWRWRW memsniff
+     patterns with "semantically meani"ngful names like "pop()"
+ o  add support for mapping between unknown routine locations and
+    "best guess" routine names
+ o  keep a collection of routine identifiers that includes the addr info
+    that Pin provides but also our best guess name based on what it does
+    to a particular data type. These names might be:
+         RWRR3R_to_DoublyLinkedList()
+ o  define a PIFL config file syntax
+ o  load a function-level PIFL trap
+ o  create a command for loading a PIFL policy file
+ o  create a runtime mode for allowing a program to execute under the PIFL
+    policy and intercept function calls and their parameters. This should
+    work for memcpy, read, write, open and close. We are primarily interested
+    in library interception and function-level flow of argument data.
+
+
+IMPORTANT
+
+ o  average velocity and acceleration / importance of this data structure
+ o  tag each instance of this type with a memory event summary
+    of reads and writes and maybe a bloom filter or histogram of
+    byte frequencies of values/content Read and Written (2 models)
+    to this data structure
+
+NICE-IF-IT-HAPPENS
+
+ o  implement memtag functionality by tracing memset, memcpy, memmove
+ o  implement patchepilogue functionality
+ o  receive a signal that the current line of control flow is src'd @ vuln
+ o  report the gradual drift in execution histories based on per-function
+    (or function-flow prefix) histograms of edge frequencies
+ o  augment grammar to provide "hints" and "handlers"
+ o  improve stack descriptions

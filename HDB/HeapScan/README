@@ -1,0 +1,19 @@
+HeapScan README
+$Id: README,v 1.1 2008/08/08 18:53:31 locasto Exp $
+``````````````````````````````````````````````````````````````````````
+
+HeapScan is a tool for parsing the heap of x86 Linux programs into
+collections of data structures.
+
+The 'heapscan' script runs the software. The code is released under
+the GNU GPL v2. Source is included, as well as a binary version of the
+software and the Pin runtime environment compiled for gcc 4.3.x.
+
+This software has been tested on an i686 Fedora Core 10 machine with
+gcc 4.3.2 20081105 (Red Hat 4.3.2-7) running kernel
+2.6.27.19-170.2.35.fc10.
+
+For more information, contact the authors:
+
+Michael Locasto <mlocasto@gmu.edu>
+

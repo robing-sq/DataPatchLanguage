@@ -1,0 +1,8 @@
+Michael E. Locasto :  wrote the initial tool, basic interpreter shell,
+                      the MEMSNIFF, MALLOCSNIFF, MEMTAG, and HEAPSCAN
+		      components
+
+TODO:
+ * documentation
+ * man pages
+ * "data structure behavior" tool

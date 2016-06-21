@@ -1,0 +1,40 @@
+Detective Work to Dynamically Discover Data Operation Semantics
+$Id$
+=======
+
+
+Two major ideas:
+
+I. Data Operation Reverse Engineering: Given a specification of
+   where data structures are in memory and the sequence of
+   raw events that happen to them, we can more effectively
+   label the code slides that manipulate these structures, thereby
+   generating said events
+
+ 1) use a grammar of data structures (linked lists, etc.) and
+    types to identify all the data structures and where they
+    live in memory
+
+ 2) use memsniff to monitor WHAT CODE accesses these data structures
+    and HOW
+
+ 3) do this at several different times in the process lifecycle to
+    extract time-based context (i.e., startup, config, module loading,
+    main service loop, reconfig, restart, shutdown)
+
+ 4) use this information to reverse engineer semantically meaningful
+    function or procedure names and identify inlined functions
+
+II. Build a Countermeasure to this type of reverse engineering
+
+ 1) the key thing is that an "attacker" or reverser is given a spec of
+    the data structures (or can find them via OSDI2008)
+
+ 2) the countermeasure is to dynamically change the TYPE or TYPE layout
+    during runtime. A transformation procedure is called and supplied
+    an *encrypted* type; after the transformation, all instances of
+    the data structure have been re-encoded and the type itself
+    "rehashed"
+
+ 3) this transformation point presents a program analysis step that
+    is impossible to "see" through

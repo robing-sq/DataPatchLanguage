@@ -1,0 +1,140 @@
+HeapScan Tool: Scan Dynamic Memory for Data Structures
+$Id: DESIGN,v 1.1 2008/08/08 18:53:31 locasto Exp $
+=======================================================
+
+
+HDB is an advanced program execution analyzer that observes memory
+events and correlates them with discoverd objects on the heap. This
+type of analysis is primarily of use for reverse engineering efforts:
+one example is to deduce semantically meaningful function or code
+block identifiers. HDB contains two main components: a tool that
+continuously scans its record of the heap for the presence of data
+structures (it knows about the grammar of these data structures
+through explicit configuration; such configuration can be
+automatically deduced at runtime (see "Digging for Data Structures,
+OSDI 2008") or can be manually specified or derived from struct
+definitions in header files).  This HeapScan component, as an
+optimization, also records every memory read or write event. The
+MemSniff part of this tool supplies these events to HeapScan so that
+HeapScan can avoid scanning the entire (mostly unallocated heap
+space). As a result, HeapScan has a hot list of memory that it knows
+has been read from or written to; HeapScan also intercepts malloc,
+realloc, and free requests to maintain this search hit list. Finally,
+MemSniff records every memory read and write event by every thread in
+the program. HDB uses these events and correlates them with the map of
+data structures maintained by HeapScan. Finally, we provide a small
+gdb-like command interface for setting watchpoints on various data
+structure conditions.
+
+
+
+
+
+TODO:
+
+1) need a tool for generating data structure .dsspec files
+
+2) need to define .dsspec file format / grammar
+
+3) need to design a component for reading .dsspec files and loading
+   data structure patterns in.
+
+4) need to design DSPatterns objects: they are a set of types & positions 
+   and a list of constraints to check
+
+5) create a simple tool that just outputs the starting address of a
+   particular data structure, for each discovered data structure. list
+   "end" of the data structure (either end of standalone structure or
+   last "pointed to" addresses (end-of-list, tail, leaves, last nodes
+   in hashtable)
+
+DESIGN:
+
+
+1. Specify a grammar for data structures
+2. Provide grammar to tool that iterates over the heap
+3. Tool prints out information according to embedded script statements
+4. Heap isn't just a stream of data structures; thus we need a good
+   algorithm to locate "anchors". We can provide "hints"
+5. This algorithm is ripe for parallelization: we can start scanning
+   from a variety of places in memory and only follow those paths (i.e.,
+   migrate more processors toward these paths, or to 'new' paths) that
+   seem to match in a promising fashion
+6. Use cases: 
+     - finding crypto key schedules
+     - finding function pointers to "hook"
+     - mapping file data back to running memory
+     - what parts of a program (and data structures) have contributed to
+       the range of bytes [X..Y] in a particular output file?
+7. Pin Tool attaches to the program and then goes dormant. It intercepts
+   enough instruction to know where the heap is. On a signal to the
+   process (SIGUSR1), HeapScan wakes up and scans memory
+   on      (SIGUSR2), HeapScan wakes up, reloads the grammar, and scans memory
+
+List         : ListElement+;
+
+ListElement  : Data Cleanup PreviousLink NextLink {this.parent.size++;};
+
+Cleanup      : @uint32; //pointer to cleanup function for this node
+                        //'@' implies that it should be a valid address
+
+Data         : char[24] {name="id";};
+
+PreviousLink : @uint32 | NULL //'@' implies valid address, not just a #
+               {condition(target.NextLink == addressof(this));}; 
+
+NextLink     : @uint32 | NULL //'@' implies valid address, not just a #
+               {condition(@uint32.value.PreviousLink == addressof(this));}; 
+
+//HeapScan uses Pin to automatically tell it that __search_range is from
+//the start to the end of the .heap section. You can override that here,
+//or you can provide a list of start addresses to focus on. Multiple ones
+//will fork off multiple HeapScan threads on a multicore processor.
+hint(List l)
+{
+   __start_address = {0x8994ce,0x0844ded};
+   //__search_range = {0x8888..0xDEADBEEF};
+}
+
+hint(ListElement le)
+{
+   if(le.Data[5] > 0 && le.Data[5] < 100)
+   {
+      anchor_affinity = 10000;
+   }
+}
+
+hint(ListElement le)
+{
+   //scan memory for a MAC address
+}
+
+//a trigger is read only. can be marked asynchronous 'wobble, 'quick', async
+//the 'async' keyword is optional; if provided, trigger will be fired in a
+//new thread. Use this capability for short tasks where you don't care if 
+//the data is entirely fresh, or for long tasks that you don't want to delay
+//HeapScan's main processing (and thus the program's processing).
+//I am ambivalent about firing off a thread just for a single printf,
+//although this may actually have better performance if the I/O is going to
+//get blocked for some reason
+async trigger ListElement
+{
+   printf("cleanup_function() is at address: %p\n", this.Cleanup);
+}
+
+trigger List
+{
+   printf("List has %lld elements\n", this.size);
+}
+
+//read/write access to the ListElement
+//synchronized access
+handler ListElement
+{
+   ListElement e = new ListElement;
+   //repoint all parent links to another node
+   this.PreviousLink = e;
+   //note that this will probably kill the tool's ability to
+   //recognize ListElements in future scans, as the condition
+   //associated with NextLink will fail
+}

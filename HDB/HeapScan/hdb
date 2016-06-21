@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# $Id$
+#
+
+HDB_HOME=.
+PIN_HOME=../../..
+PIN="$PIN_HOME"/pin 
+PIN_TOOL="$HDB_HOME"/obj-ia32/HeapScan.so
+
+if [[ -z "$@" ]]
+then 
+    "$PIN" -mt -t "$PIN_TOOL" -version -- /bin/true;
+    echo "hdb Copyright 2009 Michael E. Locasto";
+    echo "It scans the heap for data structures and correlates them with memory events.";
+    echo "";
+    echo "Usage:";
+    echo "     hdb [BINARY] [OPTIONS]" ;
+    echo "     e.g., hdb /bin/ls -Shl" ;
+else "$PIN" -mt -t "$PIN_TOOL" -- $@ ;
+fi
+
+

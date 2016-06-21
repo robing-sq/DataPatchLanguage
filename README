@@ -1,0 +1,47 @@
+----------------------
+   Acknowledgement
+----------------------
+
+The DPL System project was a Master's thesis
+project under the supervision of Dr. Michael
+Locasto. The project has not been updated 
+since 2012 but if your system meets all the
+requirements it should run properly.
+
+----------------------
+   	About
+----------------------
+
+The DPL System hot patches the data structures
+of running applications. By inputting a running
+program to the MEMIE object it parses its DWARF
+debugging information and stores it in a SQL
+database. Patches can be written in the form of
+SQL statements and then applied to the database
+that represents the running program. The database
+is updated and imported back to the running 
+program, updating this way desired data structures.
+
+----------------------
+      Requirements
+----------------------
+
+In order to run the Data Patching Language 
+you first need to install the following 
+components:
+
+1) Intel's Pin x86 Dynamic Library
+2) MySQL database
+3) LibDwarf
+4) C program with debugging symbols available
+
+----------------------
+Command Line Arguments
+----------------------
+
+To run the DPL program you will need to use
+the following command:
+
+	./MEMIE.o -p processID
+
+

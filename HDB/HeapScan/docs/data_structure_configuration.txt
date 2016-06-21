@@ -1,0 +1,19 @@
+Data Structure Configuration Files DESIGN
+===
+
+Data structure configuration files are composed of two main elements:
+definitions and patterns.
+
+//native types are built in machine types
+// {u}int{8,16,32,64}
+
+type a
+{
+  ptr;
+  4; //int
+  6;
+  24; //next
+  24; //prev
+};
+
+pattern:

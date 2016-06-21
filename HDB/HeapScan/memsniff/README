@@ -1,0 +1,18 @@
+MemSniff README
+$Id: README,v 1.1 2008/04/20 15:54:09 locasto Exp $
+``````````````````````````````````````````````````````````````````````
+
+MemSniff is a tool for observing the memory events of x86 Linux
+programs from userspace.
+
+The 'memsniff' script runs the software. The code is released under
+the GNU GPL v2. Source is included, as well as a binary version of the
+software and the Pin runtime environment compiled for gcc 3.4.  
+
+This software has been tested on an i686 Fedora Core 3 machine with
+3.4.4 20050721 (Red Hat 3.4.4-2) running kernel 2.6.12-1.1381_FC3.
+
+For more information, contact the authors:
+
+Michael Locasto <locasto@cs.dartmouth.edu>
+
